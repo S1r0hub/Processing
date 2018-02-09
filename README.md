@@ -5,11 +5,9 @@ Repository to test different algorithms
 
 #### Rasterization
 
-[Bresenham's Algorithm (line rasterization)](algorithms/rasterization/bresenham_line)  
-
-[Bresenham's Algorithm (circle rasterization)](algorithms/rasterization/bresenham_circle)  
-
-[DDA Integer Version (line rasterization)](algorithms/rasterization/dda_integer)  
+- [Bresenham's Algorithm (line rasterization)](algorithms/rasterization/bresenham_line)
+- [Bresenham's Algorithm (circle rasterization)](algorithms/rasterization/bresenham_circle)
+- [DDA Integer Version (line rasterization)](algorithms/rasterization/dda_integer)
 
 ---
 
