@@ -1,4 +1,6 @@
-PImage img = new PImage(256,256);
+int circleRadius = 100;
+PImage img = new PImage(circleRadius+1,circleRadius+1);
+
 
 void setup()
 {
@@ -14,9 +16,8 @@ void setup()
   }
   img.updatePixels();
   
-  
   // perform bresenham circle (midpoint algorithm)
-  bresenhamCircle(img.width-1);
+  bresenhamCircle(circleRadius);
   
   noSmooth(); // dont smooth when scaling the image
   image(img, 0, 0, width, height); // show image
@@ -37,6 +38,8 @@ public void bresenhamCircle(int radius)
   
   int x = 0;
   int y = radius;
+  
+  drawPixel(img, x, y, color(0));
   
   while (x < y)
   {
