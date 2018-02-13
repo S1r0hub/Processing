@@ -1,5 +1,6 @@
-int circleRadius = 7;
+int circleRadius = 100;
 PImage img = new PImage(circleRadius+1,circleRadius+1);
+boolean drawSecondOctant = true;
 boolean printCoordinates = true;
 
 
@@ -18,7 +19,7 @@ void setup()
   img.updatePixels();
   
   // perform bresenham circle (midpoint algorithm)
-  bresenhamCircle(circleRadius, printCoordinates);
+  bresenhamCircle(circleRadius, drawSecondOctant, printCoordinates);
   
   noSmooth(); // dont smooth when scaling the image
   image(img, 0, 0, width, height); // show image
@@ -33,14 +34,16 @@ public void drawPixel(PImage image, int x, int y, int Color)
 
 
 // draws first octant of the circle
-public void bresenhamCircle(int radius, boolean printCoords)
+public void bresenhamCircle(int radius, boolean secondOctant, boolean printCoords)
 {
   float d = 5/4 - radius;
   
   int x = 0;
   int y = radius;
   
+  // draw first pixel
   drawPixel(img, x, y, color(0));
+  if (secondOctant) { drawPixel(img, y, x, color(0)); }
   
   while (x < y)
   {
@@ -48,10 +51,10 @@ public void bresenhamCircle(int radius, boolean printCoords)
     else       { d += 2*(x-y) + 5; x++; y--; }
     
     if (printCoords)
-    {
-      println("Drawing pixel at x = " + x + " , y = " + y);
-    }
+    { println("Drawing pixel at x = " + x + " , y = " + y); }
     
-    drawPixel(img, x, y, color(0)); 
+    // draw the pixel to the image
+    drawPixel(img, x, y, color(0));
+    if (secondOctant) { drawPixel(img, y, x, color(0)); }
   }
 }
