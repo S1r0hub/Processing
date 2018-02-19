@@ -48,9 +48,11 @@ class Polygon
   public void setX(float x) { this.x = x; }
   public void setY(float y) { this.y = y; }
   
+  // width and height are scale factors on x- or y-axis
   public void setWidth(float width) { this.width = width; }
   public void setHeight(float height) { this.height = height; }
   
+  // global scaling factor
   public void setScale(float scale) { this.scale = scale; }
   
   public void setEdgeSize(float size) { this.edgeSize = size; }
@@ -59,12 +61,16 @@ class Polygon
   public void setVertexSize(float size) { this.vertexSize = size; }
   public void setVertexColor(color c) { this.vertexColor = c; }
   
+  // to not connect the last and the first vertex
   public void open() { this.closed = false; }
+  
+  // will connect the last vertex with the first (create this edge)
   public void close() { this.closed = true; }
   
   
   // GETTER
   
+  // origin x- and y-coordinates of the polygon
   public float getX() { return this.x; }
   public float getY() { return this.y; }
   
@@ -72,9 +78,12 @@ class Polygon
   public float getHeight() { return this.height; }
   public float getScale() { return this.scale; }
   
+  // get all unmodified vertex coordinates (unscaled)
   public ArrayList<Pair<Float,Float>> getVertices() { return this.vertices; }
-  public int getVertexCount() { return this.vertices.size(); }  
+  public int getVertexCount() { return this.vertices.size(); }
   public Pair<Float, Float> getVertex(int index) { return this.vertices.get(index); }
+  
+  // get the vertex position (scaled by global scale factor as well as width and height)
   public Pair<Float, Float> getVertexPos(int index)
   {
     Pair<Float, Float> vertex = getVertex(index);
@@ -89,6 +98,7 @@ class Polygon
   public color getVertexColor() { return this.vertexColor; }
   public float getVertexSize() { return this.vertexSize; }
  
+  // tells whether the last and first vertex will be connected
   public boolean isClosed() { return this.closed; }
  
  

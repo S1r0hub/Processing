@@ -1,13 +1,15 @@
-// Sutherland-Hodgeman Polygon Clipping Algorithm
+// Sutherland-Hodgman Polygon Clipping Algorithm
 
 
 Polygon clippingPolygon;
 Polygon heart;
 
+
 void setup()
 {
   size(512, 512, P3D);
   
+  // example clipping polygon (rectangle)
   clippingPolygon = new Polygon(0, 0, 1.2, 1.2, 50.f);
   
   clippingPolygon.addVertex(-1, -1);
@@ -19,6 +21,7 @@ void setup()
   clippingPolygon.close();
 
   
+  // example for a polygon heart
   heart = new Polygon(0, 0, 1, -1, 20.f);
   
   heart.addVertex(0, 0.6f);
@@ -43,40 +46,11 @@ void draw()
   clear();
   background(color(255));
   
-  /*
-  pushMatrix();
-  translate(width/2.f, height/2.f);
-  rotateZ(millis() / 1000.f);
-  clippingPolygon.draw();  
-  popMatrix();
-  */
-  
-  /*
-  pushMatrix();
-  translate(width/2.f, height/2.f);
-  rotateY(-millis() / 1000.f);
-  heart.draw(true, false);
-  popMatrix();
-  */
-  
-  int hearts = 40;
-  for (int i = 0; i < hearts; i++)
-  {
-    pushMatrix();
-    translate(width/2.f, height/2.f);
-    //rotateY(millis() / (10.f * ((i+1) / (float) hearts) + 1000));
-    rotateY(millis() / (10.f * (i+1) + 50) + 50);
-    //rotateZ(millis() / (10.f * (i+1)));
-    Polygon heartx = new Polygon(heart);
-    //heartx.setScale((i / (float) hearts) * 40.f + 50);
-    heartx.setScale(80);
-    heartx.draw(true, false);
-    popMatrix();
-  }
+  heartPolygonTest(heart);
 }
 
 
-// Clipping can work like this:
+// How the clipping works:
 /*
 - Edge E connects 2 points P1 and P2 (aka vertices)
 - we get a line, everything right/left to the line is in/outside
@@ -116,7 +90,7 @@ void clipPolygon(Polygon poly, Polygon clip)
     Pair<Float, Float> edge = new Pair<Float, Float>(cp2.first - cp1.first, cp2.second - cp1.second);
     Pair<Float, Float> v1_norm = normVector(edge);
     
-    // compare each point of the polygon with the edge (if inside or outside) with the 4 cases:
+    // Compare each point of the polygon with the edge (if inside or outside) with respect to the 4 cases.
     /*
     1) p1 & p2 out   -> do nothing
     2) p1 out, p2 in -> add P_intersection and p2
@@ -132,16 +106,16 @@ void clipPolygon(Polygon poly, Polygon clip)
       boolean p1_inside = checkIfInside(verts.get(k-1), cp1, v1_norm);
       boolean p2_inside = checkIfInside(verts.get(k), cp1, v1_norm);
       
-      if (!p1_inside && !p2_inside) { continue; }    // both outside -> nothing
-      else if (!p1_inside & p2_inside)               // p1 outside, p2 inside -> add intersection and p2
+      if (!p1_inside && !p2_inside) { continue; }    // 1. case: both outside -> nothing
+      else if (!p1_inside & p2_inside)               // 2. case: p1 outside, p2 inside -> add intersection and p2
       {
         // TODO
       }
-      else if (p1_inside && !p2_inside)              // p1 inside, p2 outside -> add intersection
+      else if (p1_inside && !p2_inside)              // 3. case: p1 inside, p2 outside -> add intersection
       {
         // TODO
       }
-      else if (p1_inside && p2_inside)               // both inside -> add just p2
+      else if (p1_inside && p2_inside)               // 4. case: both inside -> add just p2
       {
         verts_out.add(verts.get(k));
       }
@@ -150,6 +124,7 @@ void clipPolygon(Polygon poly, Polygon clip)
 }
 
 
+// returns the normalized vector of the passed one
 Pair<Float, Float> normVector(Pair<Float, Float> vector)
 {
     float vecLength = sqrt(pow(vector.first,2) + pow(vector.second,2));
@@ -161,6 +136,11 @@ Pair<Float, Float> normVector(Pair<Float, Float> vector)
 v = vertex
 cp1 = clip point 1 (vertex)
 v1_norm = normalized vector v1 (the clipping edge)
+
+Checks if a vertex is inside or outside of the polygon-edge (left/right of it).
+
+For a better understanding why this works, check out my geogebra visualization:
+https://github.com/S1r0hub/Processing/geogebra/clipping/inside-outside-test.ggb
 */
 boolean checkIfInside(Pair<Float, Float> v, Pair<Float, Float> cp1, Pair<Float, Float> v1_norm)
 {
@@ -174,4 +154,42 @@ boolean checkIfInside(Pair<Float, Float> v, Pair<Float, Float> cp1, Pair<Float, 
   
   if (z <= 0) { return true; }
   return false;
+}
+
+
+/*
+ce = clipping edge
+pe = polygon edge
+
+Computes the intersection point of the two lines using homogeneous coordinates.
+Will return the euclidean 2-dimensional coordinates of the intersection point.
+*/
+Pair<Float,Float> getIntersectionPoint(Pair<Float, Float> ce, Pair<Float, Float> pe)
+{
+  // TODO
+  return new Pair<Float,Float>(0.f,0.f);
+}
+
+
+
+// ########################################################################################
+// TEST SECTION (can be removed - but then also remove the call in main loop (draw)!)
+
+// just for testing the polygon heart in different rotations
+void heartPolygonTest(Polygon heart)
+{
+  int hearts = 40;
+  for (int i = 0; i < hearts; i++)
+  {
+    pushMatrix();
+    translate(width/2.f, height/2.f);
+    //rotateY(millis() / (10.f * ((i+1) / (float) hearts) + 1000));
+    rotateY(millis() / (10.f * (i+1) + 50) + 50);
+    //rotateZ(millis() / (10.f * (i+1)));
+    Polygon heartx = new Polygon(heart);
+    //heartx.setScale((i / (float) hearts) * 40.f + 50);
+    heartx.setScale(80);
+    heartx.draw(true, false);
+    popMatrix();
+  }
 }
