@@ -60,17 +60,21 @@ class Line
     if (this.getxAxisCut() != 0) { x1 = 1.f / this.getxAxisCut() / (-1); }
     if (this.getyAxisCut() != 0) { y1 = 1.f / this.getyAxisCut() / (-1); }
     
+    /*
     println("L1 m = " + this.get_m() + " , n = " + this.get_n());
     println("L1 x_cut = " + this.getxAxisCut() + " , y_cut = " + this.getyAxisCut());
     println("Homo x1 = " + x1 + " , y1 = " + y1 + " , z1 = " + z1);
+    */
     
     float x2 = 0, y2 = 0, z2 = 1.f;
     if (l2.getxAxisCut() != 0) { x2 = 1.f / l2.getxAxisCut() / (-1); }
     if (l2.getyAxisCut() != 0) { y2 = 1.f / l2.getyAxisCut() / (-1); }
     
+    /*
     println("L2 m = " + l2.get_m() + " , n = " + l2.get_n());
     println("L2 x_cut = " + l2.getxAxisCut() + " , y_cut = " + l2.getyAxisCut());
     println("Homo x2 = " + x2 + " , y2 = " + y2 + " , z2 = " + z2);
+    */
     
     // cross product result: (x1,y1,z1) cross (x2,y2,z2)
     // x1 x2

@@ -97,8 +97,8 @@ class Polygon
   public Pair<Float, Float> getVertexPos(int index)
   {
     Pair<Float, Float> vertex = getVertex(index);
-    float first = vertex.first * getWidth() * getScale();
-    float second = vertex.second * getHeight() * getScale();
+    float first = getX() + vertex.first * getWidth() * getScale();
+    float second = getY() - vertex.second * getHeight() * getScale();
     return new Pair<Float, Float>(first, second);
   }
   
@@ -136,7 +136,7 @@ class Polygon
     for (int i = 0; i < getVertexCount(); i++)
     {
       Pair<Float, Float> v = this.getVertexPos(i);
-      point(getX() + v.first, getY() - v.second, 1);
+      point(v.first, v.second, 1);
     }
   }
   
@@ -151,14 +151,14 @@ class Polygon
     {
       Pair<Float, Float> v1 = this.getVertexPos(i-1);
       Pair<Float, Float> v2 = this.getVertexPos(i);
-      line(getX() + v1.first, getY() - v1.second, getX() + v2.first, getY() - v2.second);
+      line(v1.first, v1.second, v2.first, v2.second);
     }
     
     if (close && this.getVertexCount() > 2)
     {
       Pair<Float, Float> v1 = this.getVertexPos(this.getVertexCount()-1);
       Pair<Float, Float> v2 = this.getVertexPos(0);
-      line(getX() + v1.first, getY() - v1.second, getX() + v2.first, getY() - v2.second);
+      line(v1.first, v1.second, v2.first, v2.second);
     }
   }
   

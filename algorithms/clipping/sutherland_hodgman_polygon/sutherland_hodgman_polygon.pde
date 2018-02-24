@@ -1,4 +1,5 @@
 // Sutherland-Hodgman Polygon Clipping Algorithm
+// This algorithm clips a desired polygon against a rectangular clipping polygon.
 
 
 Polygon clippingPolygon;
@@ -10,14 +11,15 @@ void setup()
   size(512, 512, P3D);
   
   // example clipping polygon (rectangle)
-  clippingPolygon = new Polygon(0, 0, 1.f, 1.f, 50.f);
+  clippingPolygon = new Polygon(0, 0, 1.f, 1.5f, 40.f);
   
-  clippingPolygon.addVertex(-1, -0.8);
+  clippingPolygon.addVertex(-1, -1);
+  clippingPolygon.addVertex(-1, 1);
+  clippingPolygon.addVertex(1, 1);
   clippingPolygon.addVertex(1, -1);
-  clippingPolygon.addVertex(0.5, 1);
-  //clippingPolygon.addVertex(-1, 1);
-  
+
   clippingPolygon.setEdgeColor(color(200,50,50));
+  clippingPolygon.setVertexSize(8.f);
   //clippingPolygon.close();
 
   
@@ -42,19 +44,25 @@ void setup()
   
   
   translate(width/2.f,height/2.f);
+  
+  Polygon clippedPolygon = clipPolygon(heart, clippingPolygon);
+  clippedPolygon.setEdgeColor(color(50,255,50));
   clippingPolygon.draw();
-  //heart.draw();
+  heart.draw();
   */
   
-  testLines();
+  // perform some line intersection tests
+  //testLines();
   
-  Polygon poly = new Polygon(0,0,1.2f,1.f,50.f);
+  Polygon poly = new Polygon(0,0,1.5f,1.f,100.f);
   poly.addVertex(-0.5f,0);
-  poly.addVertex(1,0.1f);
+  poly.addVertex(0.5,0.1f);
+  poly.addVertex(1.f,-1.f);
   
   translate(width/2.f,height/2.f);
   
   Polygon clippedPolygon = clipPolygon(poly, clippingPolygon);
+  clippedPolygon.setEdgeColor(color(50,255,50));
   
   clippingPolygon.draw();
   poly.draw();
@@ -100,20 +108,38 @@ Polygon clipPolygon(Polygon poly, Polygon clip)
     return new Polygon(0,0);
   }
   
+  println("Clipping polygon.");
   
   // input for each edge (vertices of the polygon)
   ArrayList<Pair<Float,Float>> verts_out = new ArrayList<Pair<Float,Float>>(poly.getVerticesScaled());
   
   // iterate over each edge of the clipping polygon
-  for (int i = 1; i < clip.getVertexCount(); i++)
-  {
+  for (int i = 1; i <= clip.getVertexCount(); i++)
+  { 
     // get clip points (cp)
     Pair<Float, Float> cp1 = clip.getVertexPos(i-1);
-    Pair<Float, Float> cp2 = clip.getVertexPos(i);
+    Pair<Float, Float> cp2 = null;
+    
+    // case of connecting first and last point to an edge (closed)
+    if (i == clip.getVertexCount())
+    {
+      if (clip.isClosed())
+      {
+        cp2 = cp1;
+        cp1 = clip.getVertexPos(0);
+      }
+      else { break; }
+    }
+    else
+    { cp2 = clip.getVertexPos(i); }
+    
+    println("cp1 = " + cp1.toString() + " , cp2 = " + cp2.toString());
     
     // build the edge (= v1)
     Pair<Float, Float> edge = new Pair<Float, Float>(cp2.first - cp1.first, cp2.second - cp1.second);
+    //println("v1 = " + edge);
     Pair<Float, Float> v1_norm = normVector(edge);
+    //println("v1_norm = " + v1_norm);
     
     // Compare each point of the polygon with the edge (if inside or outside) with respect to the 4 cases.
     /*
@@ -126,8 +152,11 @@ Polygon clipPolygon(Polygon poly, Polygon clip)
     ArrayList<Pair<Float,Float>> verts = (ArrayList<Pair<Float,Float>>) verts_out.clone();
     verts_out.clear(); // clear this because we want to add our clipped points to it in the following code
     
+    print("L = "); println(verts);
     for (int k = 0; k < verts.size(); k++)
     {
+      if (verts.size() < 3 && k > 0) { break; }
+      
       // get polygon points (pp)
       // check last to first vertex edge first 
       Pair<Float, Float> pp1 = verts.get(verts.size()-1);
@@ -151,10 +180,11 @@ Polygon clipPolygon(Polygon poly, Polygon clip)
         Line pe = new Line(pp1,pp2); // polygon edge
         
         Pair<Float,Float> intersectionPoint = getIntersectionPoint(ce,pe);
+        println("Adding point 2 and intersection: " + intersectionPoint.toString());
         
-        // add normalized points because our polygons vertex coordinates are in range of -1 to 1
-        verts_out.add(normalizePoint(intersectionPoint, poly.getWidth(), poly.getHeight(), poly.getScale()));
-        verts_out.add(normalizePoint(pp2, poly.getWidth(), poly.getHeight(), poly.getScale()));
+        // add normalized intersection point because they are calculated using the scaling factors of the polygon
+        verts_out.add(intersectionPoint);
+        verts_out.add(pp2);
       }
       else if (p1_inside && !p2_inside)              // 3. case: p1 inside, p2 outside -> add intersection
       {
@@ -162,19 +192,21 @@ Polygon clipPolygon(Polygon poly, Polygon clip)
         Line pe = new Line(pp1,pp2); // polygon edge
         
         Pair<Float,Float> intersectionPoint = getIntersectionPoint(ce,pe);
+        println("Adding intersection: " + intersectionPoint.toString());
         
-        verts_out.add(normalizePoint(intersectionPoint, poly.getWidth(), poly.getHeight(), poly.getScale()));
+        verts_out.add(intersectionPoint);
       }
       else if (p1_inside && p2_inside)               // 4. case: both inside -> add just p2
       {
-        verts_out.add(normalizePoint(pp2, poly.getWidth(), poly.getHeight(), poly.getScale()));
+        verts_out.add(pp2);
       }
     }
+    print("L' = "); println(verts_out);
   }
   
   Polygon clippedPolygon = new Polygon(poly);
   clippedPolygon.clearVertices();
-  for (Pair<Float,Float> v : verts_out) { clippedPolygon.addVertex(v); }
+  for (Pair<Float,Float> v : verts_out) { clippedPolygon.addVertex(normalizeVertex(v, poly.getWidth(), poly.getHeight(), poly.getScale())); }
   clippedPolygon.close();
   
   return clippedPolygon;
@@ -203,14 +235,17 @@ boolean checkIfInside(Pair<Float, Float> v, Pair<Float, Float> cp1, Pair<Float, 
 {
   // build second vector between p1 and another point p3 (= v)
   Pair<Float, Float> v2 = new Pair<Float, Float>(v.first - cp1.first, v.second - cp1.second);
+  //println("v2 = " + v2.toString());
   Pair<Float, Float> v2_norm = normVector(v2);
+  //println("v2_norm = " + v2_norm.toString());
   
   // calculate cross product between the 2 normalized 2D vectors and get the last (z) coordinate
   // this is equal to:
   float z = v1_norm.first * v2_norm.second - v1_norm.second * v2_norm.first;
+  println("z = " + z);
   
   // if clipping polygon built clockwise -> z <= 0 => true, else z > 0 => true
-  if (z >= 0) { return true; }
+  if (z <= 0) { return true; }
   return false;
 }
 
@@ -226,10 +261,11 @@ Pair<Float,Float> getIntersectionPoint(Line ce, Line pe) { return ce.intersect(p
 
 
 // normalize the point according to width, height and scale
-Pair<Float,Float> normalizePoint(Pair<Float,Float> point, float width, float height, float scale)
+Pair<Float,Float> normalizeVertex(Pair<Float,Float> point, float width_, float height_, float scale)
 {
-  point.first = point.first / width / scale;
-  point.second = point.second / height / scale;
+  //println("Scale: " + scale + " - " + point.first + " / " + width_ + " / " + scale);
+  point.first = point.first / width_ / scale;
+  point.second = point.second / height_ / scale;
   return point;
 }
 
