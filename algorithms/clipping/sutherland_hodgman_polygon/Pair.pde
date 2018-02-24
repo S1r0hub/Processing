@@ -8,4 +8,7 @@ class Pair<T,F>
     this.first = first;
     this.second = second;
   }
+  
+  public String toString()
+  { return "(" + this.first + "," +  this.second + ")"; }
 }

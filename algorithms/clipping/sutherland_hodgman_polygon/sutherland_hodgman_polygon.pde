@@ -46,6 +46,8 @@ void setup()
   //heart.draw();
   */
   
+  testLines();
+  
   Polygon poly = new Polygon(0,0,1.2f,1.f,50.f);
   poly.addVertex(-0.5f,0);
   poly.addVertex(1,0.1f);
@@ -231,6 +233,10 @@ Pair<Float,Float> normalizePoint(Pair<Float,Float> point, float width, float hei
   return point;
 }
 
+// test if two floats are equal
+public static boolean equal(float f1, float f2)
+{ return abs(f2-f1) < 0.00001f; }
+
 
 // ########################################################################################
 // TEST SECTION (can be removed - but then also remove the call in main loop (draw)!)
@@ -252,4 +258,25 @@ void heartPolygonTest(Polygon heart)
     heartx.draw(true, false);
     popMatrix();
   }
+}
+
+
+// performs some tests
+void testLines()
+{
+  println("\n======================");
+  println("Test: Line Intersection");
+  Line clip = new Line(2.f,2.f,4.f,6.f);
+  Line poly = new Line(1.f,6.f,5.f,4.f);
+  println("Line 1 = " + clip.toString());
+  println("Line 2 = " + poly.toString());
+  println("Intersection = " + clip.intersect(poly).toString());
+  println("----------------------");
+  println("Test: Line Intersection 2");
+  clip = new Line(1.f,4.f,5.f,4.f);
+  poly = new Line(2.f,2.f,2.f,5.f);
+  println("Line 1 = " + clip.toString());
+  println("Line 2 = " + poly.toString());
+  println("Intersection = " + clip.intersect(poly).toString());
+  println("======================");
 }
