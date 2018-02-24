@@ -23,6 +23,8 @@ class Polygon
     this.scale = scale;
   }
   
+  public Polygon(float x, float y) { this(x, y, 1.f, 1.f, 1.f); }
+  
   // copy constructor
   public Polygon(Polygon polygon)
   {
@@ -80,6 +82,14 @@ class Polygon
   
   // get all unmodified vertex coordinates (unscaled)
   public ArrayList<Pair<Float,Float>> getVertices() { return this.vertices; }
+  public ArrayList<Pair<Float,Float>> getVerticesScaled()
+  {
+    ArrayList<Pair<Float,Float>> verticesNew = new ArrayList<Pair<Float,Float>>();
+    for (int i = 0; i < this.vertices.size(); i++)
+    { verticesNew.add(this.getVertexPos(i)); }
+    return verticesNew;
+  }
+  
   public int getVertexCount() { return this.vertices.size(); }
   public Pair<Float, Float> getVertex(int index) { return this.vertices.get(index); }
   
@@ -113,6 +123,9 @@ class Polygon
   public void draw(boolean showEdges) { draw(showEdges, true); }
   public void draw() { draw(true); }
   
+  // removes all the vertices
+  public void clearVertices() { this.vertices.clear(); }
+  
   public void drawVertices(float size)
   {
     if (this.getVertexCount() <= 0) { return; }
@@ -123,7 +136,7 @@ class Polygon
     for (int i = 0; i < getVertexCount(); i++)
     {
       Pair<Float, Float> v = this.getVertexPos(i);
-      point(getX() + v.first, getY() + v.second, 1);
+      point(getX() + v.first, getY() - v.second, 1);
     }
   }
   
@@ -138,14 +151,22 @@ class Polygon
     {
       Pair<Float, Float> v1 = this.getVertexPos(i-1);
       Pair<Float, Float> v2 = this.getVertexPos(i);
-      line(getX() + v1.first, getY() + v1.second, getX() + v2.first, getY() + v2.second);
+      line(getX() + v1.first, getY() - v1.second, getX() + v2.first, getY() - v2.second);
     }
     
     if (close && this.getVertexCount() > 2)
     {
       Pair<Float, Float> v1 = this.getVertexPos(this.getVertexCount()-1);
       Pair<Float, Float> v2 = this.getVertexPos(0);
-      line(getX() + v1.first, getY() + v1.second, getX() + v2.first, getY() + v2.second);
+      line(getX() + v1.first, getY() - v1.second, getX() + v2.first, getY() - v2.second);
     }
+  }
+  
+  // prints out the vertex coordinates to the console
+  public void printVertices()
+  {
+    int i = 0;
+    for (Pair<Float,Float> v : this.vertices)
+    { println("Vertex " + (i++) + " = (" + v.first + " , " + v.second + ")"); }
   }
 }
