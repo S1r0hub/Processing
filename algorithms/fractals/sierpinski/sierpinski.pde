@@ -2,13 +2,13 @@
 // Created: 07.03.2020
 // Processing Version: 3.5.4
 //
-// The following code shows how to create the sierpinksi triangle fractal.
+// The following code shows how to create the sierpinski triangle fractal.
 // It is a triangle containing triangles... just look at the image ;D
 // This code includes two simple algorithms:
-// - sierpinksi(..)
+// - sierpinski_v1(..)
 //   -> created always 3 new triangles per iteration
 //   -> e.g. allows to color each individually (but relatively slow)
-// - sierpinski2(..)
+// - sierpinski_v2(..)
 //   -> creates only a white triangle in the middle
 //   -> much faster (used by default)
 //
@@ -20,7 +20,7 @@
 final boolean genImage = false; // set true to generate HQ images
 
 // export to image settings (ratio should be 4:3)
-final String filename = "sierpinksi";
+final String filename = "sierpinski";
 final int img_width = 4 * 1000;
 final int img_height = 3 * 1000;
 PGraphics img_pg; // don't modify
@@ -68,8 +68,8 @@ void setup() {
     noStroke();
   }
 
-  //sierpinksi(l, t, r, 0);
-  sierpinksi2(l, t, r, 0);
+  //sierpinski_v1(l, t, r, 0);
+  sierpinski_v2(l, t, r, 0);
   
   // save to file
   if (genImage) {
@@ -97,15 +97,15 @@ void drawTriangle(Vertex p1, Vertex p2, Vertex p3, int fillColor) {
 }
 
 
-/** Sierpinksi v1 - drawing 3 new triangles. */
-void sierpinksi(Vertex l, Vertex t, Vertex r, int depth) {
+/** Sierpinski v1 - drawing 3 new triangles. */
+void sierpinski_v1(Vertex l, Vertex t, Vertex r, int depth) {
 
   if (depth > depth_max) { return; }
   
   // base triangle (in black)
   if (depth == 0) {
     drawTriangle(l, r, t, 0);
-    sierpinksi(l, r, t, depth+1);
+    sierpinski_v1(l, r, t, depth+1);
     return;
   }
   
@@ -134,21 +134,21 @@ void sierpinksi(Vertex l, Vertex t, Vertex r, int depth) {
   drawTriangle(rl, rt, rr, 0);
   
   // start recursively draw next 3 triangles
-  sierpinksi(tl, tt, tr, depth+1);
-  sierpinksi(ll, lt, lr, depth+1);
-  sierpinksi(rl, rt, rr, depth+1);
+  sierpinski_v1(tl, tt, tr, depth+1);
+  sierpinski_v1(ll, lt, lr, depth+1);
+  sierpinski_v1(rl, rt, rr, depth+1);
 }
 
 
-/** Sierpinksi v2 - just drawing a single triangle (white). */
-void sierpinksi2(Vertex l, Vertex t, Vertex r, int depth) {
+/** Sierpinski v2 - just drawing a single triangle (white). */
+void sierpinski_v2(Vertex l, Vertex t, Vertex r, int depth) {
   
   if (depth > depth_max) { return; }
   
   // base triangle (in black)
   if (depth == 0) {
     drawTriangle(l, r, t, 0);
-    sierpinksi2(l, r, t, depth+1);
+    sierpinski_v2(l, r, t, depth+1);
     return;
   }
   
@@ -159,7 +159,7 @@ void sierpinksi2(Vertex l, Vertex t, Vertex r, int depth) {
   drawTriangle(lt, lr, rt, 255);
   
   // start recursively draw next 3 triangles
-  sierpinksi2(l, lr, lt, depth+1);
-  sierpinksi2(lt, t, rt, depth+1);
-  sierpinksi2(lr, rt, r, depth+1);
+  sierpinski_v2(l, lr, lt, depth+1);
+  sierpinski_v2(lt, t, rt, depth+1);
+  sierpinski_v2(lr, rt, r, depth+1);
 }
