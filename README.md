@@ -22,6 +22,6 @@ Please link to this repository if you use the code or visualizations generated.
 
 #### Fractals
 
-- [Sierpinksi Triangle](algorithms/fractals/sierpinksi)
+- [Sierpinksi Triangle](algorithms/fractals/sierpinski)
 
 --- 
