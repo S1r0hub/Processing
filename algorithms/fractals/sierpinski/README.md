@@ -1,3 +1,3 @@
-# Sierpinksi Triangle
+# Sierpinski Triangle
 
-![Sierpinksi Triangle Example](sierpinski/sierpinksi_w4000-h3000.png)
+![Sierpinski Triangle Example](sierpinski_w4000-h3000.png)
