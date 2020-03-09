@@ -1,9 +1,12 @@
-# Processing
-Repository to test different algorithms
+# Algorithms in Processing
+
+Repository to test different algorithms using [Processing](https://processing.org/).  
+
+Please link to this repository if you use the code or visualizations generated.
 
 --- 
 
-## Algorithms and their location
+## Algorithms & Location
 
 #### Rasterization
 
@@ -14,9 +17,11 @@ Repository to test different algorithms
 #### Clipping
 
 - [Sutherland-Hodgman (2D polygon clipping)](algorithms/clipping/sutherland_hodgman_polygon)
-  - [Inside-Outside test visualization](geogebra/clipping/inside-outside-test.ggb)
-  - [line-line intersection visualization](geogebra/clipping/line-line-intersection.ggb)
+  - [Inside-Outside test visualization](geogebra/clipping/inside-outside-test.ggb) [Geogebra file]
+  - [line-line intersection visualization](geogebra/clipping/line-line-intersection.ggb) [Geogebra file]
+
+#### Fractals
+
+- [Sierpinksi Triangle](algorithms/fractals/sierpinksi)
 
 --- 
-
-Please link to this repository if you use any of the codes or visualizations.
