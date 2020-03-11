@@ -23,5 +23,6 @@ Please link to this repository if you use the code or visualizations generated.
 #### Fractals
 
 - [Sierpinski Triangle](algorithms/fractals/sierpinski)
+- [Mandelbrot Set](algorithms/fractals/mandelbrot)
 
 --- 
