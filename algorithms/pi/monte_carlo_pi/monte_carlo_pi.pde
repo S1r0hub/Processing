@@ -17,30 +17,39 @@
 // Thanks.
 
 int border = 10;
+int rect_width = 512;
 
 // initial points per iteration
-int speed = 100;
+int speed = 5000;
 
 // changed during execution
 int hits = 0, miss = 0;
 int lastTime = 0;
 boolean kLt, kRt;
 
+// collect the last "errors" iterations error values
+int errors = 100;
+
+// collects the absolute errors of the approximaton to pi
+import java.util.ArrayDeque;
+ArrayDeque<Float> errorList = new ArrayDeque<Float>(errors);
+
 
 void setup() {
   
-  size(512,512);
+  size(1024,512);
   background(255,255,255,255);
   stroke(color(20,20,20));
-  rect(border, border, width-(border*2)+1, height-(border*2)+1);
-  //circle(width/2, height/2, width-(border*2));
+  
+  rect(border, border, rect_width-(border*2)+1, height-(border*2)+1);
+  //circle(rect_width/2, height/2, rect_width-(border*2));
 }
 
 
 void draw() {
 
-  // only run code below every 2 seconds
-  if (millis() < lastTime + 1000*2) { return; }
+  // only run code below every second
+  if (millis() < lastTime + 1000) { return; }
   
   // take timestamp to wait for next iteration
   lastTime = millis();
@@ -56,7 +65,7 @@ void draw() {
   int pc[] = new int[speed];
   int out_index = 0;
   
-  int xw = width - border*2;
+  int xw = rect_width - border*2;
   int yh = height - border*2;
   
   // Shape to render points inside circle
@@ -75,7 +84,7 @@ void draw() {
     // set color for points inside/outside
     // and calculate their positions for drawing
     int c = inside ? color(100,100,255) : color(255,180,100);
-    int xpos = border + (width-border*2)/2 + floor(x * 0.5f * xw) + 1;
+    int xpos = border + (rect_width-border*2)/2 + floor(x * 0.5f * xw) + 1;
     int ypos = border + (height-border*2)/2 + floor(y * 0.5f * yh) + 1;
  
     if (inside) {
@@ -104,9 +113,81 @@ void draw() {
   ps_o.endShape();
   shape(ps_o);
   
+  // calculate quarter pi
+  float quarter_pi = hits / (float)(hits+miss);
+  float error = abs(QUARTER_PI - quarter_pi);
+  
+  // store error in list
+  if (errorList.size() >= errors) { errorList.removeLast(); }
+  errorList.push(error);
+  
+  // Console printout
   println("Current: Hits=" + String.valueOf(hits-hits_prev) + ", Miss=" + String.valueOf(miss-miss_prev));
   println("Total: Hits=" + String.valueOf(hits) + ", Miss=" + String.valueOf(miss));
-  println("Pi = " + String.valueOf(hits / (float)(hits+miss) * 4.f));
+  String piStr = "Pi = " + String.valueOf(quarter_pi * 4.f);
+  println(piStr);
+  println("Error = " + String.valueOf(error));
+
+  // ----------------------------------------
+  // clear right side of window
+  fill(255);
+  stroke(255);
+  rect(rect_width+border, border, width-rect_width-(border*2)+1, height-(border*2)+1);
+  
+  // visual printout
+  fill(0);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text("Points per Iteration: " + String.valueOf(speed), rect_width+border, border);
+  text("Hits: " + String.valueOf(hits) + "/" + String.valueOf(hits+miss), rect_width+border, border+25);
+  text(piStr, rect_width+border, border+50);
+  
+  // draw error graph
+  int start_height = 80;
+  int graph_width = width-rect_width-(border*2)+1;
+  int graph_height = height-(border*2+start_height)+1;
+  stroke(0);
+  fill(255);
+  rect(rect_width+border, border+start_height, graph_width, graph_height);
+  
+  if (errorList.size() > 1) {
+    
+    int x_start = rect_width+border+1;
+    int y_start = height-border-1;
+    float x_dist = graph_width / (float) errors;
+    
+    // get maximum error in list
+    float error_max = 0;
+    float error_min = 9999999;
+    for (float e : errorList) {
+      if (e > error_max) { error_max = e; }
+      if (e < error_min) { error_min = e; }
+    }
+    
+    fill(0);
+    textSize(14);
+    text("Max Error = " + String.valueOf(error_max), x_start + 10, y_start - graph_height + 10);
+    text("Min Error = " + String.valueOf(error_min), x_start + 10, y_start - graph_height + 30);
+    text("Cur Error = " + String.valueOf(error), x_start + 10, y_start - graph_height + 50);
+    fill(255);
+    
+    int i = 0;
+    float prev_e = -1;
+    for (float e : errorList) {
+      
+      if (i > 0) {
+        int x0 = x_start + floor(x_dist * (i-1));
+        int x1 = x_start + floor(x_dist * i);
+        int y0 = y_start - floor(prev_e / error_max * (graph_height-2));
+        int y1 = y_start - floor(e / error_max * (graph_height-2));
+        stroke(color(50,50,220));
+        line(x0,y0,x1,y1);
+      }
+      
+      prev_e = e;
+      i++;
+    }
+  }
 }
 
 
