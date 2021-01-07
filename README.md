@@ -1,12 +1,16 @@
-# Algorithms in Processing
+# Processing Collection
 
-Repository to test different algorithms using [Processing](https://processing.org/).  
+This collection includes various programs.  
+A lot of them deal with an implementation of specific algorithms.  
 
-Please link to this repository if you use the code or visualizations generated.
+This repository serves to test them using [Processing](https://processing.org/).  
+
+Please link to this repository if you use the code or the generated visualizations.  
+Thank you.  
 
 --- 
 
-## Algorithms & Location
+## Algorithms/Programs & Location
 
 #### Rasterization
 
@@ -24,5 +28,9 @@ Please link to this repository if you use the code or visualizations generated.
 
 - [Sierpinski Triangle](algorithms/fractals/sierpinski)
 - [Mandelbrot Set](algorithms/fractals/mandelbrot)
+
+#### Simulations
+
+- [Conway's Game of Life](simulations/game_of_life)
 
 --- 
