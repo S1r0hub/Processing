@@ -38,19 +38,20 @@ class GOL {
   public int getCellsTotal() { return w*h; }
   
   public int getCellsAlive() { return cells_alive; }
-  public float getCellsAlivePerc() { return getPerc(cells_alive / (float) getCellsTotal(), 2); }
+  public float getCellsAlivePerc() { return getPerc(cells_alive / (float) getCellsTotal(), 2, 100); }
   
   public int getCellsDead() { return getCellsTotal() - getCellsAlive(); }
-  public float getCellsDeadPerc() { return getPerc(getCellsDead() / (float) getCellsTotal(), 2); }
+  public float getCellsDeadPerc() { return getPerc(getCellsDead() / (float) getCellsTotal(), 2, 100); }
   
   public int getCellDeaths() { return cell_deaths; }
   public int getCellsBorn() { return cells_born; }
+  public float getCellsBornDeathRatio() { return getPerc(getCellsBorn() / (float) getCellDeaths(), 4, 1); }
   
   // Get rounded percentage (e.g. for 0.155 => 15,50 %) 
-  private float getPerc(float perc, int digits) {
+  public float getPerc(float perc, int digits, float multiplier) {
     if (digits < 1) { return round(perc * 100); }
     float dfac = pow(10, digits);
-    return round(perc * dfac * 100) / dfac;
+    return round(perc * dfac * multiplier) / dfac;
   }
   
   // Set rules for active neighbours 0-8.

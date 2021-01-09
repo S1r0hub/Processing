@@ -76,7 +76,7 @@ void update(float delay_ms) {
   // set next wait time
   if (delay_ms < 0.01) { delay_ms = 0.01; } 
   next_wait_time = delay_ms;
-  
+
   // set simulation in left corner of window
   final int max_img_w = width < height ? width : height;
   final int max_img_h = height < width ? height : width;
@@ -92,8 +92,9 @@ void update(float delay_ms) {
   text("Cells", text_x, (text_y += fontHeight * 1.5));
   text("Total: " + gol.getCellsTotal(), (text_x += 20), (text_y += fontHeight));
   text("Alive: " + gol.getCellsAlive() +  " (" + gol.getCellsAlivePerc() + " %)", text_x, (text_y += fontHeight));
-  text("Deaths:  " + gol.getCellDeaths(), text_x, (text_y += fontHeight));
-  text("Births:  " + gol.getCellsBorn(), text_x, (text_y += fontHeight));
+  text("Deaths: " + gol.getCellDeaths(), text_x, (text_y += fontHeight));
+  text("Births: " + gol.getCellsBorn(), text_x, (text_y += fontHeight));
+  text("Birth / Death Ratio:  " + gol.getCellsBornDeathRatio(), text_x, (text_y += fontHeight));
   text_x = text_x_start;
 
   // create graphs if not done yet
