@@ -9,6 +9,7 @@ class GOL {
   private boolean[][] neighbours; // holds neighbour counts
   private PImage img; // image to draw (we could use this as grid as well)
   private int iterations = 0;
+  private int cells_alive = 0, cells_born = 0, cell_deaths = 0;
   
   // [0] holds the state in case that 0 neighbours are alive, ...
   int[] rules = new int[9];
@@ -33,8 +34,24 @@ class GOL {
   
   // Get current grid as image.
   public PImage getImage() { return img; }
-  
   public int getIterations() { return iterations; }
+  public int getCellsTotal() { return w*h; }
+  
+  public int getCellsAlive() { return cells_alive; }
+  public float getCellsAlivePerc() { return getPerc(cells_alive / (float) getCellsTotal(), 2); }
+  
+  public int getCellsDead() { return getCellsTotal() - getCellsAlive(); }
+  public float getCellsDeadPerc() { return getPerc(getCellsDead() / (float) getCellsTotal(), 2); }
+  
+  public int getCellDeaths() { return cell_deaths; }
+  public int getCellsBorn() { return cells_born; }
+  
+  // Get rounded percentage (e.g. for 0.155 => 15,50 %) 
+  private float getPerc(float perc, int digits) {
+    if (digits < 1) { return round(perc * 100); }
+    float dfac = pow(10, digits);
+    return round(perc * dfac * 100) / dfac;
+  }
   
   // Set rules for active neighbours 0-8.
   // state_change: -1 = kill cell, 0 = stay (alive or dead), 1 = set alive
@@ -87,17 +104,32 @@ class GOL {
   // Returns how many cells changed their state.
   public int step() {
     
+    int changed = 0, c_alive = 0, deaths = 0, born = 0;
+    
     // Get next state for all cells
     // ToDo: parallelization
-    int changed = 0;
     for (int y = 0; y < h; y++) {
       for (int x = 0; x < w; x++) {
-        int n_active = getNeighboursActive(x,y);        
-        neighbours[y][x] = applyRules(grid[y][x], n_active);
-        if (neighbours[y][x] != grid[y][x]) { changed++; }
+        
+        int n_active = getNeighboursActive(x,y);
+        boolean alive_prev = grid[y][x];
+        boolean cell_alive = applyRules(alive_prev, n_active);
+        neighbours[y][x] = cell_alive;
+        
+        if (cell_alive) { c_alive++; }
+        if (cell_alive != alive_prev) {
+          changed++;
+          if (alive_prev && !cell_alive) { deaths++; }
+          else { born++; }
+        }
         //println("[" + x + ", " + y + "] n=" + n_active + ", a=" + grid[y][x] + " => " + neighbours[y][x]);
       }
     }
+    
+    // update returned alive count
+    cells_alive = c_alive;
+    cells_born += born;
+    cell_deaths += deaths;
     
     // Apply the computed state (make it the current one).
     // Updates the image and sets the colors.
