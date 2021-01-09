@@ -93,9 +93,10 @@ class UIGraph {
     String label_y = this.settings.label_y; 
     
     int textHeight = 5;
+    int title_size = 12;
     int offset_x = label_y.length() > 0 ? 30 : 15;
     int offset_y = label_x.length() > 0 ? 30 : 15;
-    int title_spacing = title.length() > 0 ? 35 : 0; // on y-axis
+    int title_spacing = title.length() > 0 ? 20 : 0; // on y-axis
     int center_x = getWidth() / 2;
 
     // create graph layout
@@ -107,8 +108,8 @@ class UIGraph {
       pg.beginDraw();
       pg.clear();
       
-      pg.textSize(12);
-      if (title.length() > 0) { pg.text(title, center_x - textWidth(title) / 2, title_spacing - textHeight); }
+      pg.textSize(title_size);
+      if (title.length() > 0) { pg.text(title, center_x - textWidth(title) / 2, title_size); }
       
       pg.textSize(10);
       if (label_x.length() > 0) { pg.text(label_x, offset_x/2 + center_x - textWidth(label_x) / 2, getHeight() - 1 - textHeight); }
