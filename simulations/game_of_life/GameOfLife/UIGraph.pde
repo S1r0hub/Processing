@@ -6,6 +6,9 @@
  * ToDo:
  * [X] Multiple lines in one graph
  * [X] Option to keep or set min/max of y-Axis
+ * [X] Remove old data points no longer shown on graph
+ * [ ] Option to keep old data points no longer shown on graph
+ * [ ] Reverse direction of line (draw to right or to left)
  * [ ] Legend (as optional feature)
  * [ ] Some more methods to change specific settings
  * [ ] Make lines editable (methods)
@@ -122,7 +125,7 @@ class UIGraph {
   public void removeAll(int from, int to) {
     from = max(0, from);
     to = min(lines.get(0).size(), max(from, to));
-    for (int i = from; i < to; i++) { this.remove(i); }
+    for (int i = to-1; i >= from; i--) { this.remove(i); }
   }
 
   // Get min and max for x and y in data range
@@ -197,6 +200,11 @@ class UIGraph {
     // ---------------------------------------------------------------------
     // draw the data graph
     if (lines.size() > 0 && lines.get(0).size() > 0) {
+      
+      // clean up old data points that are no longer shown
+      if (lines.get(0).size() > this.getMaxItems()) { this.remove(0); }
+      
+      // start drawing process and clear current graphic
       pgd.beginDraw();
       pgd.clear();
   

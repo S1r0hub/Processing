@@ -17,8 +17,9 @@ UIGraph g1, g2;
 
 void setup() {
   
-  size(1024, 512);
+  size(1200, 600);
   
+  /*
   // ToDo: improve
   // resize if needed
   final int w_max = 1024 > displayWidth ? displayWidth : 1024;
@@ -31,6 +32,7 @@ void setup() {
     surf.setResizable(true);
     surf.setSize(w_max, h_max);
   }
+  */
   
   // create a block
   gol.setCells(5, 5, 6, 6, true);
