@@ -9,7 +9,8 @@ class GOL {
   private boolean[][] neighbours; // holds neighbour counts
   private PImage img; // image to draw (we could use this as grid as well)
   private int iterations = 0;
-  private int cells_alive = 0, cells_born = 0, cell_deaths = 0;
+  private int cells_alive = 0, cells_born = 0, cells_died = 0;
+  private int cells_born_last = 0, cells_died_last = 0;
   
   // [0] holds the state in case that 0 neighbours are alive, ...
   int[] rules = new int[9];
@@ -43,9 +44,9 @@ class GOL {
   public int getCellsDead() { return getCellsTotal() - getCellsAlive(); }
   public float getCellsDeadPerc() { return getPerc(getCellsDead() / (float) getCellsTotal(), 2, 100); }
   
-  public int getCellDeaths() { return cell_deaths; }
-  public int getCellsBorn() { return cells_born; }
-  public float getCellsBornDeathRatio() { return getPerc(getCellsBorn() / (float) getCellDeaths(), 4, 1); }
+  public int getCellsDied(boolean total) { return total ? cells_died : cells_died_last; }
+  public int getCellsBorn(boolean total) { return total ? cells_born : cells_born_last; }
+  public float getCellsBornDeathRatio(boolean total) { return getPerc(getCellsBorn(total) / (float) getCellsDied(total), 4, 1); }
   
   // Get rounded percentage (e.g. for 0.155 => 15,50 %) 
   public float getPerc(float perc, int digits, float multiplier) {
@@ -129,8 +130,8 @@ class GOL {
     
     // update returned alive count
     cells_alive = c_alive;
-    cells_born += born;
-    cell_deaths += deaths;
+    cells_born += (cells_born_last = born);
+    cells_died += (cells_died_last = deaths);
     
     // Apply the computed state (make it the current one).
     // Updates the image and sets the colors.
