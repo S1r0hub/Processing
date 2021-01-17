@@ -1,8 +1,8 @@
 // Easy Game Of Life Implementation
 // by github.com/S1r0hub (Jan. 2021)
 
-GOL gol = new GOL(128, 128); // should be min 128x128 currently
-float wait_frames_ms = 100; // time to wait between steps in ms
+GOL gol = new GOL(0, 0, 128, 128); // should be min 128x128 currently
+int wait_frames_ms = 100; // time to wait between steps in ms
 int steps_per_frame = 1; // compute x steps per frame
 
 
@@ -10,7 +10,10 @@ int steps_per_frame = 1; // compute x steps per frame
 int last_time = 0;
 boolean stop = false;
 int cells_changed_total = 0, cells_changed_last = 0;
-float next_wait_time = 1;
+int next_wait_time = 1;
+int max_img_w, max_img_h;
+boolean mousePress = false;
+int timestamp_mouse = 0;
 UIGraph g1, g2;
 // --------------------------------------------------- //
 
@@ -18,7 +21,11 @@ UIGraph g1, g2;
 void setup() {
   
   size(1200, 600);
-  
+
+  // for GOL image
+  max_img_w = width < height ? width : height;
+  max_img_h = height < width ? height : width;
+
   /*
   // ToDo: improve
   // resize if needed
@@ -46,6 +53,25 @@ void setup() {
   gol.setCells(90, 5, 92, 25, true);
   gol.setCells(90, 40, 93, 70, true);
   
+  // blocks on bottom right
+  gol.setCells(85, 85, 90, 90, true);
+  gol.setCells(92, 92, 95, 95, true);
+  gol.setCells(95, 95, 100, 100, true);
+  gol.setCells(100, 100, 110, 110, true);
+  gol.setCells(103, 103, 107, 107, false);
+  
+  // for size > 210
+  if (gol.getWidth() > 210 && gol.getHeight() > 210) {
+    gol.setCells(150, 150, 200, 200, true);
+    gol.setCells(160, 160, 190, 190, false);
+    gol.setCells(170, 170, 180, 180, true);
+    gol.setCells(174, 174, 176, 176, false);
+    gol.setCells(144, 152, 146, 198, true); // line right
+    gol.setCells(204, 152, 206, 198, true); // line left
+    gol.setCells(152, 144, 198, 146, true); // line above
+    gol.setCells(152, 204, 198, 206, true); // line below
+  }
+  
   // create blinker (short line of 3 active cells)
   gol.setCells(10, 10, 12, 10, true);
   
@@ -60,29 +86,43 @@ void setup() {
   gol.setCell(21+10, 18+10, true);
   
   noSmooth(); // disable smoothing of image
-  update(3000); // draw initial GOL image and wait 3 seconds
+  updateSimulation(3000, false); // draw initial GOL image and wait 3 seconds
 }
 
 void draw() {
   
-  if (stop) { return; }
-  if (millis() > last_time + int(next_wait_time)) { update(wait_frames_ms); }
+  // check mouse interaction
+  if (mousePressed) {
+    
+    // check that mouse is not "hold" and some time passed
+    if (!mousePress) {
+      mousePress = true;
+      timestamp_mouse = millis();
+      if (gol.click(mouseX, mouseY, max_img_w, max_img_h)) {
+        updateSimulation(next_wait_time, false);
+      }
+    }
+  }
+  else if (millis() >= timestamp_mouse + 200) {
+    mousePress = false;
+  }
+
+  // simulation update
+  if (stop) { updateSimulation(wait_frames_ms, false); }
+  if (millis() >= last_time + next_wait_time) {
+    updateSimulation(wait_frames_ms, true);
+  }
 }
 
-void update(float delay_ms) {
+void updateSimulation(int delay_ms, boolean compute_steps) {
   
-  // draw background and save time of update
+  // save time of update and set next wait time
   last_time = millis();
-  background(color(50,50,50));
-
-  // set next wait time
-  if (delay_ms < 0.01) { delay_ms = 0.01; } 
+  if (delay_ms < 1) { delay_ms = 1; } 
   next_wait_time = delay_ms;
-
-  // set simulation in left corner of window
-  final int max_img_w = width < height ? width : height;
-  final int max_img_h = height < width ? height : width;
-  image(gol.getImage(), 0, 0, max_img_w, max_img_h); // draw image
+  
+  // clear screen
+  background(color(50,50,50));
 
   // show simulation data on screen
   final int space = 50;
@@ -123,16 +163,11 @@ void update(float delay_ms) {
     g2.setFixedMin(0);
     g2.setKeepMax(true);
   }
-  
   // -------------------------------------------------------
-  
-  // draw graphs
-  g1.add(gol.getCellsAlive());
-  g1.draw(true);
 
   // compute x next steps
   int cells_changed = 0, cells_born = 0, cells_died = 0;
-  steps_per_frame = max(1, steps_per_frame);
+  steps_per_frame = compute_steps ? max(1, steps_per_frame) : 0;
   for (int i = 0; i < steps_per_frame; i++) {
     cells_changed += gol.step();
     cells_born += gol.getCellsBorn(false);
@@ -141,14 +176,20 @@ void update(float delay_ms) {
   
   int iters = gol.getIterations();
   cells_changed_total += cells_changed;
-  if (cells_changed < 1) {
+  if (compute_steps && cells_changed < 1) {
     println("End after " + iters + " iterations.");
     stop = true;
   }
 
+  // update image after simulation step
+  image(gol.getImage(), 0, 0, max_img_w, max_img_h); // draw image
+
   // draw graphs that depend on last iteration data
+  g1.add(gol.getCellsAlive());
+  if (g1 != null) { g1.draw(true); }
+  
   g2.add(cells_born, cells_died);
-  g2.draw(true);
+  if (g2 != null) { g2.draw(true); }
 
   // print iteration information
   if (iters > 0 && iters % 50 == 0) {

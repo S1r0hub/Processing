@@ -4,7 +4,7 @@
 */
 class GOL {
   
-  private final int w, h;
+  private final int x, y, w, h;
   private boolean[][] grid; // holds current cell states
   private boolean[][] neighbours; // holds neighbour counts
   private PImage img; // image to draw (we could use this as grid as well)
@@ -16,12 +16,13 @@ class GOL {
   int[] rules = new int[9];
   
   // Create GOL instance and set default rules.
-  public GOL(int rows, int columns) {
-    grid = new boolean[rows][columns];
-    neighbours = new boolean[rows][columns];
-    h = rows; w = columns;
-    img = createImage(w, h, RGB);
-    setDefaultRules();
+  public GOL(int pos_x, int pos_y, int rows, int columns) {
+    this.grid = new boolean[rows][columns];
+    this.neighbours = new boolean[rows][columns];
+    this.x = pos_x; this.y = pos_y;
+    this.h = rows; this.w = columns;
+    this.img = createImage(w, h, RGB);
+    this.setDefaultRules();
   }
   
   // Default rules defined by Conway.
@@ -32,6 +33,11 @@ class GOL {
       -1, -1, -1
     };
   }
+  
+  public int getX() { return x; }
+  public int getY() { return y; }
+  public int getWidth() { return w; }
+  public int getHeight() { return h; }
   
   // Get current grid as image.
   public PImage getImage() { return img; }
@@ -172,5 +178,26 @@ class GOL {
       case 1: return true;
     }
     return cell_alive;
+  }
+
+
+  // ----------------------------------------------------------------------
+  // INTERACTIVITY
+  
+  // Checks if the mouse click was on a cell.
+  // Changes the cells state accordingly to its current state.
+  public boolean click(int mouse_x, int mouse_y, int img_width, int img_height) {
+
+    if (mouse_x < this.getX() || mouse_y < this.getY()) { return false; }
+    if (mouse_x >= this.getX() + img_width) { return false; }
+    if (mouse_y >= this.getY() + img_height) { return false; }
+    
+    // map values to cell index
+    int x = floor((mouse_x - this.getX()) / (float) img_width * getWidth());
+    int y = floor((mouse_y - this.getY()) / (float) img_height * getHeight());
+    
+    println("Click inside: cell: x="+x+", y="+y);
+    setCell(x, y, !getCell(x,y));
+    return true;
   }
 }
